@@ -19,8 +19,8 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const filePath = path.join(process.cwd(), "posts", ${params.slug}.mdx);
-  const fileContent = fs.readFileSync(filePath, "utf-8");
 
+  const fileContent = fs.readFileSync(filePath, "utf-8");
   const { data, content } = matter(fileContent);
 
   const processed = await remark()
