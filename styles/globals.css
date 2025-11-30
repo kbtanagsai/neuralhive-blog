@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { --dot-gap: 8px }
+
+body { @apply bg-white text-gray-900 antialiased; }
+
+h1,h2,h3 { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace; }
+
+.hr-dotted {
+  border: none;
+  height: 18px;
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: var(--dot-gap) var(--dot-gap);
+  background-position: 0 50%;
+  opacity: 0.65;
+}
+
+.container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+.header-hex { display:flex; align-items:center; gap:1rem; }
+.header-hex img { height: 90px; }
+
+.post-row { display:flex; gap:1rem; align-items:flex-start; }
+.post-thumb { width:80px; height:80px; object-fit:cover; border-radius:4px; }
+
+.article-excerpt { line-height:1.7; }
+
+@media (max-width:640px) {
+  .header-hex img { height:60px; }
+  .post-row { flex-direction: column; }
+}
