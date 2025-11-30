@@ -6,7 +6,6 @@ import remarkGfm from "remark-gfm";
 import html from "remark-html";
 import Layout from "../../components/Layout";
 
-// Generate static paths for all MDX files
 export async function getStaticPaths() {
   const postsDir = path.join(process.cwd(), "posts");
   const filenames = fs.readdirSync(postsDir);
@@ -18,7 +17,6 @@ export async function getStaticPaths() {
   return { paths, fallback: false };
 }
 
-// Load each post content by slug
 export async function getStaticProps({ params }) {
   const filePath = path.join(process.cwd(), "posts", ${params.slug}.mdx);
 
@@ -38,7 +36,6 @@ export async function getStaticProps({ params }) {
   };
 }
 
-// Actual post page component
 export default function PostPage({ frontmatter, contentHtml }) {
   return (
     <Layout>
