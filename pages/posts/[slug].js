@@ -1,29 +1,48 @@
-import Layout from '../../components/Layout'
-import { getPostSlugs, getPostBySlug } from '../../lib/posts'
-import { MDXRemote } from 'next-mdx-remote'
-import { serialize } from 'next-mdx-remote/serialize'
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
+import { remark } from "remark";
+import remarkGfm from "remark-gfm";
+import html from "remark-html";
+import Layout from "../../components/Layout";
 
-export default function PostPage({ meta, mdxSource }) {
+export async function getStaticPaths() {
+  const postsDir = path.join(process.cwd(), "posts");
+  const filenames = fs.readdirSync(postsDir);
+
+  const paths = filenames.map((name) => ({
+    params: { slug: name.replace(".mdx", "") },
+  }));
+
+  return { paths, fallback: false };
+}
+
+export async function getStaticProps({ params }) {
+  const filePath = path.join(process.cwd(), "posts", ${params.slug}.mdx);
+  const fileContent = fs.readFileSync(filePath, "utf-8");
+
+  const { data, content } = matter(fileContent);
+
+  const processed = await remark()
+    .use(remarkGfm)
+    .use(html)
+    .process(content);
+
+  return {
+    props: {
+      frontmatter: data,
+      contentHtml: processed.toString(),
+    },
+  };
+}
+
+export default function PostPage({ frontmatter, contentHtml }) {
   return (
     <Layout>
-      <h1 className="text-3xl font-mono">{meta.title}</h1>
-      <div className="text-xs my-2">{meta.date} · {meta.read} min read</div>
-      <div className="prose max-w-none">
-        <MDXRemote {...mdxSource} />
+      <div className="prose lg:prose-xl mx-auto p-6">
+        <h1>{frontmatter.title}</h1>
+        <article dangerouslySetInnerHTML={{ __html: contentHtml }} />
       </div>
     </Layout>
-  )
-}
-
-export async function getStaticPaths(){
-  const slugs = getPostSlugs().map(s => s.replace(/\.mdx$/, ''))
-  return { paths: slugs.map(s => ({ params:{ slug:s } })), fallback:false }
-}
-
-export async function getStaticProps({ params }){
-  const post = getPostBySlug(params.slug)
-  const mdxSource = await serialize(post.content, {
-    mdxOptions:{ remarkPlugins:[require('remark-gfm')] }
-  })
-  return { props:{ meta: post.meta, mdxSource } }
+  );
 }
