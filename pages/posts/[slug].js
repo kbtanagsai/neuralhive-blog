@@ -10,17 +10,19 @@ export async function getStaticPaths() {
   const postsDir = path.join(process.cwd(), "posts");
   const filenames = fs.readdirSync(postsDir);
 
-  const paths = filenames.map((name) => ({
-    params: { slug: name.replace(".mdx", "") },
-  }));
+  const paths = filenames
+    .filter((name) => name.endsWith(".mdx"))
+    .map((name) => ({
+      params: { slug: name.replace(".mdx", "") },
+    }));
 
   return { paths, fallback: false };
 }
 
 export async function getStaticProps({ params }) {
   const filePath = path.join(process.cwd(), "posts", ${params.slug}.mdx);
-
   const fileContent = fs.readFileSync(filePath, "utf-8");
+
   const { data, content } = matter(fileContent);
 
   const processed = await remark()
